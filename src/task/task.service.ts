@@ -26,7 +26,13 @@ export class TaskService {
     return this.taskModel.findOneAndUpdate({ _id: id }, updateTaskDto).exec();
   }
 
-  remove(id: string) {
-    return this.taskModel.deleteOne({ _id: id }).exec();
+  async remove(id: string) {
+    try {
+      // tslint:disable-next-line: no-invalid-await
+      await this.taskModel.remove({ id });
+      return { deleted: true };
+    } catch (err) {
+      return { deleted: false, message: err.message };
+    }
   }
 }
