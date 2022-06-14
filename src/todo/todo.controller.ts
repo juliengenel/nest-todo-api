@@ -31,16 +31,13 @@ export class TodoController {
     return this.todoService.getById(id);
   }
 
-  @Patch(':id')
-  updateTodo(
-    @Param('id') id: string,
-    @Body() updateTodoDto: UpdateTodoDto,
-  ): Promise<Todo> {
-    return this.todoService.update(id, updateTodoDto);
+  @Patch()
+  updateTodo(@Body() updateTodoDto: UpdateTodoDto): Promise<Todo> {
+    return this.todoService.update(updateTodoDto);
   }
 
   @Delete(':id')
-  DeleteTodo(@Param('id') id: string) {
+  deleteTodo(@Param('id') id: string) {
     return this.todoService.remove(id);
   }
 }

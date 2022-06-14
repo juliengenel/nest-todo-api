@@ -5,6 +5,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { TaskDoc } from './interfaces/task-document.interface';
 import { Model, Query } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
+import { dateStr } from '../dateConfig';
 
 const mockTask = (name?: 'test', completed?: false, _id?: 'a uuid'): Task => ({
   name,
@@ -69,8 +70,8 @@ describe('TaskService', () => {
     jest.spyOn(model, 'find').mockReturnValue({
       exec: jest.fn().mockResolvedValueOnce(taskDocArray),
     } as any);
-    const cats = await service.getAll();
-    expect(cats).toEqual(taskArray);
+    const tasks = await service.getAll();
+    expect(tasks).toEqual({ ...taskArray, Returned_At: dateStr });
   });
 
   it('should getOne by id', async () => {
@@ -84,8 +85,8 @@ describe('TaskService', () => {
       }) as any,
     );
     const findMockTask = mockTask('test', false, 'a uuid');
-    const foundCat = await service.getById('a uuid');
-    expect(foundCat).toEqual(findMockTask);
+    const foundTask = await service.getById('a uuid');
+    expect(foundTask).toEqual({ ...findMockTask, Returned_At: dateStr });
   });
 
   it('should insert a new task', async () => {
@@ -100,11 +101,43 @@ describe('TaskService', () => {
       name: 'test',
       completed: false,
     });
-    expect(newTask).toEqual(mockTask('test', false, 'a uuid'));
+    expect(newTask).toEqual({
+      ...mockTask('test', false, 'a uuid'),
+      Returned_At: dateStr,
+    });
+  });
+
+  it.skip('should update a task successfully', async () => {
+    jest.spyOn(model, 'findOneAndUpdate').mockReturnValueOnce(
+      createMock<Query<TaskDoc, TaskDoc>>({
+        exec: jest.fn().mockResolvedValueOnce({
+          _id: 'a uuid',
+          name: 'test',
+          completed: false,
+        }),
+      }) as any,
+    );
+    const updatedTask = await service.update({
+      _id: 'a uuid',
+      name: 'test',
+      completed: false,
+    });
+    expect(updatedTask).toEqual(mockTask('test', false));
   });
 
   it('should delete a task successfully', async () => {
     jest.spyOn(model, 'remove').mockResolvedValueOnce(true as any);
-    expect(await service.remove('a bad id')).toEqual({ deleted: true });
+    expect(await service.remove('a bad id')).toEqual({
+      deleted: true,
+      Returned_At: dateStr,
+    });
+  });
+  it('should not delete a task', async () => {
+    // really just returning a falsy value here as we aren't doing any logic with the return
+    jest.spyOn(model, 'remove').mockRejectedValueOnce(new Error('Bad delete'));
+    expect(await service.remove('a bad id')).toEqual({
+      deleted: false,
+      message: 'Bad delete',
+    });
   });
 });

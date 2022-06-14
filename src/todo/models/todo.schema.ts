@@ -12,8 +12,8 @@ export class Todo {
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }] })
   tasks: Task[];
 
-  @Prop()
-  date: string;
+  @Prop({ default: Date.now() })
+  date: Date;
 }
 
 export const TodoSchema = SchemaFactory.createForClass(Todo);

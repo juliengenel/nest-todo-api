@@ -3,6 +3,7 @@ import { TodoController } from './todo.controller';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { dateStr } from '../dateConfig';
 
 describe('TodoController', () => {
   let controller: TodoController;
@@ -114,6 +115,28 @@ describe('TodoController', () => {
         ],
         date: 'date1',
         _id: 'a strange id',
+      });
+    });
+  });
+
+  describe('updateTask', () => {
+    it('should update a task', () => {
+      const updateTask: UpdateTodoDto = {
+        _id: 'a uuid',
+        title: 'test',
+        tasks: [],
+        date: dateStr,
+      };
+      expect(controller.updateTodo(updateTask)).resolves.toEqual({
+        _id: 'a uuid',
+        ...updateTask,
+      });
+    });
+  });
+  describe('deleteTodo', () => {
+    it('should return that it deleted a todo', () => {
+      expect(controller.deleteTodo('a uuid that exists')).resolves.toEqual({
+        deleted: true,
       });
     });
   });

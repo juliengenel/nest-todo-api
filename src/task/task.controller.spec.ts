@@ -88,14 +88,22 @@ describe('TaskController', () => {
   });
 
   describe('updateTaks', () => {
-    it('should update a new cat', () => {
+    it('should update a task', () => {
       const updateTaskDto: UpdateTaskDto = {
+        _id: 'a uuid',
         name: 'task test',
         completed: false,
       };
-      expect(controller.updateTask('a uuid', updateTaskDto)).resolves.toEqual({
+      expect(controller.updateTask(updateTaskDto)).resolves.toEqual({
         ...updateTaskDto,
         _id: 'a uuid',
+      });
+    });
+  });
+  describe('deleteTask', () => {
+    it('should return that it deleted a taks', () => {
+      expect(controller.deleteTask('a uuid that exists')).resolves.toEqual({
+        deleted: true,
       });
     });
   });
